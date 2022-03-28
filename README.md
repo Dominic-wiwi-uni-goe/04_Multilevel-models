@@ -6,7 +6,7 @@ In the previous chaper we calculated estimated with simple linear regression mod
 
 ### Applicaiton of multilevel models: The mixed effects model with random intercepts and fixed slopes
 
-In a first step, we run a mixed model that will allow for a worker specific effect. Such a model is easily conducted in R, specifically with the package `lme4`. In the following, the code will look just like what you used for regression with lm, but with an additional component specifying the group, i.e. worker-specific effect. The `(1|Picker)` means that we are allowing the intercept, represented by 1, to vary by `MDENR` which is the anonymoud identification number of a picker. 
+In a first step, we run a mixed model that will allow for a worker specific effect. Such a model is easily conducted in R, specifically with the package `lme4`. In the following, the code will look just like what you used for regression with lm, but with an additional component specifying the group, i.e. worker-specific effect. The `(1|MDENR)` means that we are allowing the intercept, represented by 1, to vary by `MDENR` which is the anonymoud identification number of a picker. 
 
 (1) Load the relevant packages
 ```
