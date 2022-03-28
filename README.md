@@ -93,7 +93,7 @@ Here, we receive the following output.
 htmlreg(list(multilevel01, multilevel02, multilevel03, multilevel04, multilevel05, multilevel06, multilevel07),
         custom.model.names = c("Model 1", "Model 2","Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),  
         custom.coef.names = c("intercept", "number of picks", "level", "weight", "distance", "packes per SKU", "volume", "batch position"), 
-        file="C:/Users/domin/Desktop/Reference_Model.html")
+        file="C:/Users/domin/Desktop/Fixed effects model.html")
 ```
 
 ![image](https://user-images.githubusercontent.com/102478331/160453696-b62d361d-b658-42c7-94df-293676cd0496.png)
@@ -113,10 +113,22 @@ The output in R is:
 
 ### Applicaiton of multilevel models: The random effects model with random intercepts and random slopes
 
+```
+multilevel10 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (ANZ_PICK | MDENR ), data = dataset)
+multilevel11 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (level | MDENR ), data = dataset)
+multilevel12 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (weight | MDENR ), data = dataset)
+multilevel13 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (distance | MDENR ), data = dataset)
+multilevel14 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (packes_SKU | MDENR ), data = dataset)
+multilevel15 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (volume | MDENR ), data = dataset)
+multilevel16 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (AUFTRAGSPOS | MDENR ), data = dataset)
+```
 
-
-
-
+```
+htmlreg(list(multilevel10, multilevel11, multilevel12, multilevel13, multilevel14, multilevel15, multilevel16),
+        custom.model.names = c("Model 1", "Model 2","Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),  
+        custom.coef.names = c("intercept", "number of picks", "level", "weight", "distance", "packes per SKU", "volume", "batch position"), 
+        file="C:/Users/domin/Desktop/Random effects model.html")
+```
 
 
 
