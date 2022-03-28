@@ -23,6 +23,6 @@ coef(gpa_mixed)$student %>% head(5)
 
 
 
-**Source:** 
+**Sources:** 
 - https://m-clark.github.io/mixed-models-with-R/random_intercepts.html
 - https://bookdown.org/steve_midway/DAR/random-effects.html
