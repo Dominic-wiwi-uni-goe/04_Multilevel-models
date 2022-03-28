@@ -54,8 +54,7 @@ dataset <- BON1
 dataset
 ```
 
-(3) For our model, we try to explain the dependent variable `picktime` by several independent variables:
-- `picktime` = Time per pick in seconds
+(3) For our model, we try to explain the dependent variable `picktime` (time per pick in seconds) by several independent variables:
 - `ANZ_PICK` = Number of picks in stock keepting units (SKUs)
 - `level` = Level of pick where 0=ground level and 1=chest level
 - `weight` = Weight of a SKU picked in kilograms
