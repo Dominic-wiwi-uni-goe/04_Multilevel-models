@@ -107,6 +107,9 @@ performance::icc(model6)
 
 ![image](https://user-images.githubusercontent.com/102478331/160666237-044ba68e-d5e1-487d-8e42-2fdfd49e8160.png)
 
+We are lucky that it makes sense here: The R-squared of the level 1 (for the route iself) is 72.63 (R2m) and when we add the ICC of 11.8 which descirbed the variance chaused by level 2, we will end up with the total R-squared of the ultilevel-model (R2c) which is 84.44. 
+
+Now, we are ready to look at the estimated.
 
 (7) Summary of the final model
 
