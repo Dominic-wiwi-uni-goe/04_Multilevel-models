@@ -1,14 +1,15 @@
 ## 04 Multilevel models
 
-In the previous chaper we calculated estimated with simple linear regression models and multivariate regression models. However, these models do not include worker-specific effets. Therefore, we can create models that incorporate one regression line per worker (e.g., order picker or truck driver). These regression models range from a conventional fixed effects model to a fully random effects model:
+In the previous chaper we calculated estimates with simple linear regression models and multivariate regression models. However, these models do not include worker-specific effets. Therefore, we can create models that incorporate one regression line per worker (e.g., order picker or truck driver). These regression models range from a conventional fixed effects model to a fully random effects model:
 
 ![image](https://user-images.githubusercontent.com/102478331/160404934-f18e491b-6a8c-493f-9991-6f9128f86ba2.png)
 
-### Applicaiton of multilevel models: The mixed effects model with random intercepts and fixed slopes
+## What we will learn in this chapter
 
-In a first step, we run a mixed model that will allow for a worker specific effect. Such a model is easily conducted in R, specifically with the package `lme4`. In the following, the code will look just like what you used for regression with lm, but with an additional component specifying the group, i.e. worker-specific effect. The `(1|MDENR)` means that we are allowing the intercept, represented by 1, to vary by `MDENR` which is the anonymous identification number of a picker. 
+In this chapter we will deal with mixed effects and random effects multilevel models für professional truck drivers. They are working in the grocery retailing sector and drive one or more routes per day. The underlying vehicle routing problem (VRP) can be best described as a multiple trip VRP with time window.
 
-(1) Load the relevant packages
+## Loading the relevant packages in R
+
 ```
 library("sjPlot")
 library("sjmisc")
@@ -48,106 +49,171 @@ library("superheat")
 library("texreg")
 ```
 
-(2) Insert the empirical dataset for your analysis and name it `dataset`:
+### Applicaiton of multilevel models: The mixed effects model with random intercepts and fixed slopes
+
+In a first step, we run a mixed effects multilevel model that will allow to estimate worker-specific effects. Such a model is easily conducted in R, specifically with the package `lme4`. In the following, the code will look just like what you used for regression with lm, but with an additional component specifying the group, i.e. worker-specific effect. The `(1|Fahrer)` means that we are allowing the intercept, represented by 1, to vary by `Fahrer` which is the anonymous identification number of a professional truck driver in the given setting. 
+
+(1) Insert the empirical dataset for your analysis and name it `dataset_final`. Then we will have a look at the first lines of the final dataset:
+
 ```
-dataset <- BON1
-dataset
+View(dataset_final)
 ```
 
-(3) For our model, we try to explain the dependent variable `picktime` (time per pick in seconds) by several independent variables:
-- `ANZ_PICK` = Number of picks in stock keepting units (SKUs)
-- `level` = Level of pick where 0=ground level and 1=chest level
-- `weight` = Weight of a SKU picked in kilograms
-- `distance` = Travel distance of picker from pick i to i + 1
-- `packes_SKU` = Primary packages in one SKU (= secondary package)
-- `volume` = Volume of a SKU in litres
-- `AUFTRAGSPOS` = The position within the batch for a given pick
-- `MDENR` = The anonymous identification number of the order pickers
+(2) Define the dependent variable:
+
+Our dependent variable is the duration time per route. The clock starts at the deopt and ends after the delivery route at the deopt. The variable is named `Tourdauer_Ist` with is the real route duration from a track and trace system.
+
+(3) Define the control variables :
+
+We use various control variables in our multilevel model. The idea is to best describe what happens during a given route:
+
+- `Anzahl_Stopps`: Defines the number of stops (equal to supermarket stores) on the respective route. 
+- `GTE`: Measures the number of transport units transported on the respective route.
+- `hour`: Relects a proxy variable for the traffic density as it operationalizes the starting time of the route.
+- `Plan_Kap`: Defines the availible capacity of a truck. The comapny uses small (=30 capacity) and big (=60 capacity) trucks
+- `KM`: The kilometers driven to fulfill the respective route.  
+
 
 (4) Hereafter, we formulate a multilevel model by adding our depenent variables stepwise to the model
-```
-multilevel01 <- lmer(picktime  ~  ANZ_PICK  + (1 | MDENR ), data = dataset)
-multilevel02 <- lmer(picktime  ~  ANZ_PICK  + level + (1 | MDENR ), data = dataset)
-multilevel03 <- lmer(picktime  ~  ANZ_PICK  + level + weight + (1 | MDENR ), data = dataset)
-multilevel04 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + (1 | MDENR ), data = dataset)
-multilevel05 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + (1 | MDENR ), data = dataset)
-multilevel06 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + (1 | MDENR ), data = dataset)                     
-multilevel07 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (1 | MDENR ), data = dataset)
-```
-
-(5) Summary of the final model
-
-We can print a summary of the final model with the `summary` function.
 
 ```
-summary(multilevel07)
+model1 <- lmer(Tourdauer_Ist ~  (1 | Fahrer), data = dataset_final)
+model2 <- lmer(Tourdauer_Ist ~  Anzahl_Stopps + (1 | Fahrer), data = dataset_final)
+model3 <- lmer(Tourdauer_Ist ~  Anzahl_Stopps + GTE + (1 | Fahrer), data = dataset_final)
+model4 <- lmer(Tourdauer_Ist ~  Anzahl_Stopps + GTE + hour + (1 | Fahrer), data = dataset_final)
+model5 <- lmer(Tourdauer_Ist ~  Anzahl_Stopps + GTE + hour + Plan_Kap + (1 | Fahrer), data = dataset_final)
+model6 <- lmer(Tourdauer_Ist ~  Anzahl_Stopps + GTE + hour + Plan_Kap + KM + (1 | Fahrer), data = dataset_final)
 ```
 
-Here, we receive the following output.
+(5) R-squared value
 
-![image](https://user-images.githubusercontent.com/102478331/160454773-eb465ee4-f833-4c0c-8e01-a320656a2607.png)
-
-(6) For a regression table with estimated, p-values, and model fit measures (AIC, BIC) we use the `htmlreg` function
+We can print the R-squared value by `r.squared`. Herein we find a good model fit where our `model6` can explain 84.4% of the total variance.
 
 ```
-htmlreg(list(multilevel01, multilevel02, multilevel03, multilevel04, multilevel05, multilevel06, multilevel07),
-        custom.model.names = c("Model 1", "Model 2","Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),  
-        custom.coef.names = c("intercept", "number of picks", "level", "weight", "distance", "packes per SKU", "volume", "batch position"), 
-        file="C:/Users/domin/Desktop/Fixed effects model.html")
+r.squaredGLMM(model6)
 ```
 
-![image](https://user-images.githubusercontent.com/102478331/160453696-b62d361d-b658-42c7-94df-293676cd0496.png)
+![image](https://user-images.githubusercontent.com/102478331/160665868-71773eb4-645f-4172-859a-6cc7e5b43653.png)
 
-(7) Intra-class correlation coefficient 
+Furthermore, we can calcualte the 
 
-The intra-class correlation coefficient (ICC) indicates how much level 1 variance can be explained by level 2 (as a percentage). For example, if the ICC is 0.2, we would say that 20% of the variation is between individual workers and 80% is within the workers. We can calculate the ICC with.
+(6) Intra-class correlation coefficient 
+
+The intra-class correlation coefficient (ICC) indicates how much level 1 variance can be explained by level 2 (as a percentage). For example, if the ICC is 0.118, we would say that 11.8% of the variation is between individual workers and 88.2% is within the workers. We can calculate the ICC with
 
 ```
-icc(multilevel07)
+performance::icc(model6)
 ```
 
-The output in R is: 
+![image](https://user-images.githubusercontent.com/102478331/160666237-044ba68e-d5e1-487d-8e42-2fdfd49e8160.png)
 
-![image](https://user-images.githubusercontent.com/102478331/160455406-da3cd151-86cc-4ae7-8acc-6171455c442a.png)
+
+(7) Summary of the final model
+
+We can also print a summary of the model by
+
+```
+summary(model6)
+```
+
+![image](https://user-images.githubusercontent.com/102478331/160666497-989f4b60-0065-4f67-bc2c-fdccc170897f.png)
+
+(8) For the classical regression tables we can use the following lines of code
+
+```
+htmlreg(list(model1, model2, model3, model4, model5, model6),
+        custom.model.names = c("Nullmodel", "Model 1", "Model 2","Model 3", "Model 4", "Model 5", "Model 6"),          
+        file="D:/raw data for science/03_truck loading datasets/05_BO_deep dive/Model_all1.html")
+```
+or
+
+```
+stargazer(model1, model2, model3, model4, model5, model6,
+          type = "html", 
+          digits=4, 
+          title="", 
+          order=c(""),
+          dep.var.labels=c("Route duration"),
+          no.space=TRUE,
+          summary=TRUE,
+          single.row=TRUE,
+          rownames=TRUE,
+          align=TRUE,
+          out="D:/raw data for science/03_truck loading datasets/05_BO_deep dive/Model_all1b.html",
+          flip = FALSE)
+```
+
+Giving as a regression table which looks more like what we know from scientific journals.
+
+![image](https://user-images.githubusercontent.com/102478331/160666775-323293a5-4164-48f5-aa97-3663b3d02ad0.png)
 
 
 ### Applicaiton of multilevel models: The random effects model with random intercepts and random slopes
 
-```
-multilevel10 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (ANZ_PICK | MDENR ), data = dataset)
-multilevel11 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (level | MDENR ), data = dataset)
-multilevel12 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (weight | MDENR ), data = dataset)
-multilevel13 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (distance | MDENR ), data = dataset)
-multilevel14 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (packes_SKU | MDENR ), data = dataset)
-multilevel15 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (volume | MDENR ), data = dataset)
-multilevel16 <- lmer(picktime  ~  ANZ_PICK  + level + weight + distance + packes_SKU + volume + AUFTRAGSPOS + (AUFTRAGSPOS | MDENR ), data = dataset)
-```
+For this step, our dataset and variables are the same. However, we allow random effecnts on the variable `Anzahl_Stopps`. We formulate the following models and we (again) add stepwise all independent variables:
 
 ```
-htmlreg(list(multilevel10, multilevel11, multilevel12, multilevel13, multilevel14, multilevel15, multilevel16),
-        custom.model.names = c("Model 1", "Model 2","Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),  
-        custom.coef.names = c("intercept", "number of picks", "level", "weight", "distance", "packes per SKU", "volume", "batch position"), 
-        file="C:/Users/domin/Desktop/Random effects model.html")
+model20 <- lmer(Tourdauer_Ist ~ (Anzahl_Stopps | Fahrer), data = dataset_final)
+model21 <- lmer(Tourdauer_Ist ~ Anzahl_Stopps + (Anzahl_Stopps | Fahrer), data = dataset_final)
+model22 <- lmer(Tourdauer_Ist ~ Anzahl_Stopps + GTE + (Anzahl_Stopps | Fahrer), data = dataset_final)
+model23 <- lmer(Tourdauer_Ist ~ Anzahl_Stopps + GTE + hour + (Anzahl_Stopps | Fahrer), data = dataset_final)
+model24 <- lmer(Tourdauer_Ist ~ Anzahl_Stopps + GTE + hour + Plan_Kap + (Anzahl_Stopps | Fahrer), data = dataset_final)
+model25 <- lmer(Tourdauer_Ist ~ Anzahl_Stopps + GTE + hour + Plan_Kap + KM + (Anzahl_Stopps | Fahrer), data = dataset_final)
 ```
 
-
-
-
-
-
-
-### Calculating worker-specific effects: Individual estimates of the random effects
-
-After running the model, we can actually get estimates of the worker-specific effects. I show two ways for the first five students, both as random effect and as random intercept (i.e. intercept + random effect).
+And we print the final model:
 
 ```
-ranef(gpa_mixed)$student %>% head(5)
+htmlreg(list(model0, model20, model21, model22, model23, model24, model25),
+        file="D:/raw data for science/03_truck loading datasets/05_BO_deep dive/Model_all3.html")
+
+stargazer(model0, model20, model21, model22, model23, model24, model25,
+          type = "html", 
+          digits=4, 
+          title="", 
+          order=c(""),
+          dep.var.labels=c("Survival object of picking time (sec.)"),
+          no.space=TRUE,
+          summary=TRUE,
+          single.row=TRUE,
+          rownames=TRUE,
+          align=TRUE,
+          out="D:/raw data for science/03_truck loading datasets/05_BO_deep dive/Model_all3b.html",
+          flip = FALSE)
 ```
 
+Giving us the following output:
+
+![image](https://user-images.githubusercontent.com/102478331/160667319-08000357-dfae-49db-aad7-0c478060c7af.png)
+
+
+When we are interested in the truck driver specific effects, we can also get the individual regression weights or model betas by
+
 ```
-coef(gpa_mixed)$student %>% head(5)
+coef(model25)$Fahrer
 ```
 
+Looking like this:
+
+![image](https://user-images.githubusercontent.com/102478331/160667517-b7cf085b-3306-4c56-b647-a6eba960110c.png)
+
+When we now want to plot all regression lines of the drivers in our random effects model (random intercepts AND random slopes), we use the following code lines:
+
+```
+coef(model14)$Fahrer
+intercepts <- coef(model14)$Fahrer[,1]   # Specifying the first column only
+slopes <- coef(model14)$Fahrer[,2]       # Specifying the second column only
+
+geom_abline(slope=slopes, intercept=intercepts)
+
+ggplot(dataset_final, aes(x=random.coefficients.predictions, y=Tourdauer_Ist, group=Fahrer))+
+  stat_smooth(method="lm", se=FALSE, size=.5, color="red")
+stat_smooth(aes(group=1), method="lm", color="blue", size=1.5)
+```
+
+We get this graph:
+
+![image](https://user-images.githubusercontent.com/102478331/160667838-c161ec05-3776-47da-8469-5433fe1ded3f.png)
 
 
 
