@@ -87,7 +87,7 @@ model6 <- lmer(Tourdauer_Ist ~  Anzahl_Stopps + GTE + hour + Plan_Kap + KM + (1 
 
 (5) R-squared value
 
-We can print the R-squared value by `r.squared`. Herein we find a good model fit where our `model6` can explain 84.4% of the total variance.
+We can print the R-squared value by `r.squared`. Herein we find a good model fit where our `model6` can explain 84.4% of the total variance in our multi level model. When we only look at the first level describing the route, we find that 72.63% of the variance can be explained. This is already a hint that the level 2 variable (the professional truck driver) may be relevant. But there is another measure to prove this.
 
 ```
 r.squaredGLMM(model6)
