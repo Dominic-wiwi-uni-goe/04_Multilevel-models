@@ -99,7 +99,7 @@ Furthermore, we can calcualte the
 
 (6) Intra-class correlation coefficient 
 
-The intra-class correlation coefficient (ICC) indicates how much level 1 variance can be explained by level 2 (as a percentage). For example, if the ICC is 0.118, we would say that 11.8% of the variation is between individual workers and 88.2% is within the workers. We can calculate the ICC with
+The intra-class correlation coefficient (ICC) indicates how much level 1 variance can be explained by level 2 (as a percentage). For example, if the ICC is 0.118, we would say that 11.8% of the variation is between individual workers and 88.2% is within the workers. While the adjusted ICC only relates to the random effects, the conditional ICC also takes the fixed effects variances into account. Typically, the adjusted ICC is of interest when the analysis of random effects is of interest. We can calculate the ICC with
 
 ```
 performance::icc(model6)
