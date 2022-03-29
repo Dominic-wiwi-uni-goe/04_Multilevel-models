@@ -6,7 +6,7 @@ In the previous chaper we calculated estimates with simple linear regression mod
 
 ## What we will learn in this chapter
 
-In this chapter we will deal with mixed effects and random effects multilevel models für professional truck drivers. They are working in the grocery retailing sector and drive one or more routes per day. The underlying vehicle routing problem (VRP) can be best described as a multiple trip VRP with time window.
+In this chapter we will deal with mixed effects and random effects multilevel models that we apply to a dataset with professional truck drivers. They are working in the grocery retailing sector and drive one or more routes per day. The underlying vehicle routing problem (VRP) can be best described as a multiple trip VRP with time window.
 
 ## Loading the relevant packages in R
 
