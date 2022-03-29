@@ -61,7 +61,7 @@ View(dataset_final)
 
 (2) Define the dependent variable:
 
-Our dependent variable is the duration time per route. The clock starts at the deopt and ends after the delivery route at the deopt. The variable is named `Tourdauer_Ist` with is the real route duration from a track and trace system.
+Our dependent variable is the duration time per route. The clock starts at the depot and ends after the delivery route at the deopt. The variable is named `Tourdauer_Ist` with is the real route duration from a track and trace system.
 
 (3) Define the control variables :
 
