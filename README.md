@@ -95,7 +95,6 @@ r.squaredGLMM(model6)
 
 ![image](https://user-images.githubusercontent.com/102478331/160665868-71773eb4-645f-4172-859a-6cc7e5b43653.png)
 
-Furthermore, we can calcualte the 
 
 (6) Intra-class correlation coefficient 
 
