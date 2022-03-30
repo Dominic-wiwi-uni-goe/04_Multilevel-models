@@ -1,4 +1,4 @@
-## 04 Multivariate regression and multilevel models
+## 03 Multivariate regression and multilevel models
 
 In the previous chaper we calculated estimates with simple linear regression models and multivariate regression models. However, these models do not include worker-specific effets. Therefore, we can create models that incorporate one regression line per worker (e.g., order picker or truck driver). These regression models range from a conventional fixed effects model to a fully random effects model:
 
