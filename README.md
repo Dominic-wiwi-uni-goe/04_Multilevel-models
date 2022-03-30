@@ -221,7 +221,7 @@ We get this graph:
 
 
 
-**Sources:** 
+## Sources
 - https://m-clark.github.io/mixed-models-with-R/random_intercepts.html
 - https://bookdown.org/steve_midway/DAR/random-effects.html
 - https://rpubs.com/favstats/multilevel
